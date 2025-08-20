@@ -1,18 +1,20 @@
 # Kubernetes Microdemo
 
-A simple microservices demo app to practice Builds, Deployments, Services, and Routes on OpenShift.  
-It includes:
+A simple microservices demo app for Kubernetes. It includes:
 - **MySQL** (persistent database with init script)
-- **Redis** (cache + queue)
-- **API service** (Flask REST API)
-- **Frontend service** (Flask web UI)
-- **Worker service** (background job processor)
+- **Redis** (cache and queue)
+- **API** (Flask REST)
+- **Frontend** (Flask web UI)
+- **Worker** (background job processor)
+
+## Prerequisites
+- A default StorageClass that supports ReadWriteOnce for the MySQL PVC
+- An Ingress controller (for example NGINX Ingress)
+- A container registry the cluster can pull from, or a local image cache for dev
 
 ---
 
 ## 1. Create Project and Apply Base Objects
-
-`kubectl create namespace microdemo`
 
 `kubectl apply -f k8s/00-namespace.yaml`
 
@@ -30,7 +32,7 @@ It includes:
 
 Wait for MySQL readiness before app pods:
 
-`kubectl get pods -n microdemo -w`
+`kubectl -n microdemo get pods -w`
 
 
 ## 3. Build images into a registry
@@ -48,25 +50,10 @@ API
 
 `docker push emccumbe/microdemo-worker:latest`
 
-
-Frontend
-
-`oc new-build --name=frontend --binary --strategy=docker -n microdemo`
-
-`oc start-build frontend --from-dir=services/frontend --follow -n microdemo`
-
-
-Worker
-
-`oc new-build --name=worker --binary --strategy=docker -n microdemo`
-
-`oc start-build worker --from-dir=services/worker --follow -n microdemo`
-
-Verify imagestreams
-
-`oc get is -n microdemo`
-
 ## 4. Deploy app pods and expose with Routes
+Install an ingress controller
+
+`kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.1/deploy/static/provider/cloud/deploy.yaml`
 
 `kubectl apply -f k8s/20-api-deployment.yaml`
 
@@ -74,17 +61,17 @@ Verify imagestreams
 
 `kubectl apply -f k8s/22-worker-deployment.yaml`
 
-`kubectl apply -f k8s/40-routes.yaml`
+`kubectl apply -f k8s/40-ingress.yaml`
 
 
 ## 5. Smoke test
 copy the frontend host and open it in your browser
 
-`kubectl -n microdemo get ingress`
+`kubectl -n microdemo get ingress microdemo`
 
 Post a message in the UI.  Confirm it appears and survives refreshes.  Check the API Directly.
 
-`curl -s http://<ingress-host>/api/messages | jq .`
+`curl -s http://microdemo.<INGRESS_IP>.nip.io/api/messages | jq .`
 
 ## 6. What to practice next
 
