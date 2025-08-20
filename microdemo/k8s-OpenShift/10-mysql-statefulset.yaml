@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-init
+  namespace: microdemo
+data:
+  init.sql: |
+    CREATE DATABASE IF NOT EXISTS messages_db;
+    USE messages_db;
+    CREATE TABLE IF NOT EXISTS messages (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      author VARCHAR(80) NOT NULL,
+      body TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE USER IF NOT EXISTS 'appuser'@'%' IDENTIFIED BY 'apppass';
+    GRANT ALL PRIVILEGES ON messages_db.* TO 'appuser'@'%';
+    FLUSH PRIVILEGES;
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+  namespace: microdemo
+spec:
+  serviceName: mysql
+  replicas: 1
+  selector:
+    matchLabels: { app: mysql }
+  template:
+    metadata:
+      labels: { app: mysql }
+    spec:
+      containers:
+        - name: mysql
+          image: docker.io/library/mysql:8.0
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom: { secretKeyRef: { name: mysql-secret, key: mysql-root-password } }
+            - name: MYSQL_DATABASE
+              valueFrom: { secretKeyRef: { name: mysql-secret, key: mysql-database } }
+            - name: MYSQL_USER
+              valueFrom: { secretKeyRef: { name: mysql-secret, key: mysql-user } }
+            - name: MYSQL_PASSWORD
+              valueFrom: { secretKeyRef: { name: mysql-secret, key: mysql-password } }
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+            - name: init
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: init
+          configMap:
+            name: mysql-init
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi

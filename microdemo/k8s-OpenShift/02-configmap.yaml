@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: microdemo
+data:
+  DB_HOST: mysql
+  DB_NAME: messages_db
+  REDIS_HOST: redis
+  REDIS_PORT: "6379"
+  CACHE_TTL: "10"
+  QUEUE_KEY: events
+  API_BASE: http://api.microdemo.svc.cluster.local:8080
