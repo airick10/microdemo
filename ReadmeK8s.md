@@ -24,6 +24,11 @@ A simple microservices demo app for Kubernetes. It includes:
 
 
 ## 2.  Bring up Data Services
+Use this for a local-path storage class.  Useful for labs.
+`kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.27/deploy/local-path-storage.yaml`
+
+Continuing with data services
+
 `kubectl apply -f k8s/10-mysql-statefulset.yaml`
 
 `kubectl apply -f k8s/11-redis-deployment.yaml`
