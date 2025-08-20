@@ -1,0 +1,33 @@
+microdemo/
+├─ services/
+│ ├─ api/
+│ │ ├─ app.py
+│ │ ├─ db.py
+│ │ ├─ cache.py
+│ │ ├─ requirements.txt
+│ │ └─ Dockerfile
+│ ├─ frontend/
+│ │ ├─ app.py
+│ │ ├─ templates/
+│ │ │ └─ index.html
+│ │ ├─ requirements.txt
+│ │ └─ Dockerfile
+│ └─ worker/
+│ ├─ worker.py
+│ ├─ db.py
+│ ├─ requirements.txt
+│ └─ Dockerfile
+├─ db/
+│ └─ init.sql
+├─ k8s-openshift/
+│ ├─ 00-namespace.yaml
+│ ├─ 01-secrets.yaml
+│ ├─ 02-configmap.yaml
+│ ├─ 10-mysql-statefulset.yaml
+│ ├─ 11-redis-deployment.yaml
+│ ├─ 20-api-deployment.yaml
+│ ├─ 21-frontend-deployment.yaml
+│ ├─ 22-worker-deployment.yaml
+│ ├─ 30-services.yaml
+│ └─ 40-routes.yaml
+└─ README.md
