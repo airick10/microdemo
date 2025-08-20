@@ -50,7 +50,7 @@ API
 
 `docker push emccumbe/microdemo-worker:latest`
 
-## 4. Deploy app pods and expose with Routes
+## 4. Deploy app pods and expose with Ingress
 Install an ingress controller
 
 `kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.1/deploy/static/provider/cloud/deploy.yaml`
@@ -82,8 +82,6 @@ Readiness gates: break MySQL password and watch readiness fail
 HPA: add resources and try a simple HPA on the API
 
 Secrets: rotate the MySQL user password and restart worker + api
-
-Logs: oc logs deploy/worker -f to watch queue consumption
 
 Quotas and limits: constrain the namespace and test scheduling
 
