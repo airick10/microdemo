@@ -9,9 +9,9 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   rules:
-    - host: microdemo.<INGRESS_IP>.nip.io   # e.g., microdemo.192.168.49.2.nip.io (minikube)
-      http:
+    - http:
         paths:
+          # frontend: keep path as-is
           - path: /?(.*)
             pathType: ImplementationSpecific
             backend:
@@ -19,6 +19,7 @@ spec:
                 name: frontend
                 port:
                   name: http
+          # api: strip the /api prefix so Flask sees /messages
           - path: /api/?(.*)
             pathType: ImplementationSpecific
             backend:
